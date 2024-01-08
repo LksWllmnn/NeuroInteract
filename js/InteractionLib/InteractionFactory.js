@@ -2,11 +2,11 @@ import { InterType } from "../enums/InterType";
 import { SliderInteraction } from "./SliderInteraction";
 import { WheelInteraction } from "./WheelInteraction";
 export class InteractionFactory {
-    get interactionHandler() {
-        return this._interactionHandler;
-    }
     constructor(_interactionType, _renderer, _camera, _neuralNetwork, _raycaster, _scene, _lablerenderer) {
         this._interactionHandler = this.buildInteractionHandler(_interactionType, _renderer, _camera, _neuralNetwork, _raycaster, _scene, _lablerenderer);
+    }
+    get interactionHandler() {
+        return this._interactionHandler;
     }
     buildInteractionHandler(_interactionType, _renderer, _camera, _neuralNetwork, _raycaster, _scene, _lablerenderer) {
         switch (_interactionType) {

@@ -2,6 +2,8 @@ import * as tf from '@tensorflow/tfjs';
 export class TFModel {
     constructor() {
         this.model = tf.sequential();
+        // Define a custom event
+        this.trainingDoneEvent = new CustomEvent('trainingDone');
     }
     async start() {
         let predButton = document.getElementById("PredictButton");
@@ -10,6 +12,7 @@ export class TFModel {
             predButton.addEventListener("click", this.clickedPredictButton);
         }
         this.loader = document.getElementById("loaderScreen");
+        this.epochLoader = document.getElementById("epochLoader");
         // Read file content synchronously
         const response = await fetch('wohnungen.txt');
         const content = await response.text();
@@ -51,7 +54,7 @@ export class TFModel {
     }
     async train(x_train, y_train, x_val, y_val) {
         console.log("train start");
-        let history = await this.model.fit(x_train, y_train, {
+        await this.model.fit(x_train, y_train, {
             epochs: 200,
             verbose: 1,
             validationData: [
@@ -59,11 +62,18 @@ export class TFModel {
                 y_val
             ],
             callbacks: {
-                onTrainEnd: () => { if (this.loader)
-                    this.loader.style.display = "none"; }
+                onEpochEnd: (epoch, logs) => {
+                    if (this.epochLoader)
+                        this.epochLoader.innerHTML = "training in Epoch: " + epoch + "/200";
+                },
+                onTrainEnd: () => {
+                    if (this.loader)
+                        this.loader.style.display = "none";
+                    window.dispatchEvent(this.trainingDoneEvent);
+                }
             }
         });
-        console.log(await this.predict(1, 1, 50));
+        //console.log(await this.predict(1,1,50));
     }
     stylePredBut(button) {
         button.style.position = "absolute";

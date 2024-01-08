@@ -40,6 +40,7 @@
         background-color: black;
         z-index: 10;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
     }
@@ -51,6 +52,9 @@
         height: 120px;
         -webkit-animation: spin 2s linear infinite; /* Safari */
         animation: spin 2s linear infinite;
+    }
+    #epochLoader{
+        color: white;
     }
 
     /* Safari */
@@ -67,7 +71,7 @@
 </head>
 
 <body>
-    <div class="loaderScreen" id="loaderScreen"><div class="loader"></div></div>
+    <div class="loaderScreen" id="loaderScreen"><div id="epochLoader">training epoch: 0</div><div class="loader"></div></div>
     
    <div class="cam">
     <button id="PredictButton">Predict</button>

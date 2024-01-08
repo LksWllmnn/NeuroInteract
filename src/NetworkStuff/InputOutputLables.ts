@@ -16,6 +16,9 @@ export class IOLables {
     private inputPriceShower: HTMLDivElement|undefined;
     private inputRoomsShower: HTMLDivElement|undefined;
 
+    private outputWrong;
+    private outputTrue;
+
     private tfModel: TFModel;
 
     constructor(_camera: THREE.PerspectiveCamera, _renderer: THREE.Renderer, _scene: THREE.Scene, _tfModel: TFModel) {
@@ -29,12 +32,47 @@ export class IOLables {
         this.selectRoomsElement = <HTMLInputElement>document.getElementById("roomsInput");
         if(this.selectRoomsElement)this.selectRoomsElement.addEventListener("change", this.changeRooms.bind(this))
 
-        this.outputLabel(0);
-        this.outputLabel(1);
+        this.outputTrue = this.outputLabel(0);
+        this.outputWrong = this.outputLabel(1);
 
         this.inputVillageShower = this.inputLable(0);
         this.inputRoomsShower = this.inputLable(1);
         this.inputPriceShower = this.inputLable(2);
+
+        window.addEventListener('trainingDone', () => {
+            console.log('Training is done!');
+            this.firstPrediction();
+        });
+        
+    }
+
+    async firstPrediction(): Promise<void> {
+        console.log("starting First Prediction");
+        if(this.inputVillageShower) {
+            let villageNumber = 0;
+            switch(this.inputVillageShower.innerText) {
+                case "Furtwangen": villageNumber = 1; break;
+                case "Donaueschingen": villageNumber = 2; break;
+                case "Schwenningen": villageNumber = 3; break;
+            }
+            let pred = await this.tfModel.predict(villageNumber,+this.selectRoomsElement.placeholder,+this.selectPriceElement.placeholder)
+            this.outputWrong.innerText = "Schlecht: " + Math.round(pred[0][0]*100) + "%";
+            this.outputTrue.innerText = "Gut: " + Math.round(pred[0][1]*100) + "%";
+        }
+    }
+
+    async newPredict(): Promise<void> {
+        if(this.inputVillageShower) {
+            let villageNumber = 0;
+            switch(this.inputVillageShower.innerText) {
+                case "Furtwangen": villageNumber = 1; break;
+                case "Donaueschingen": villageNumber = 2; break;
+                case "Schwenningen": villageNumber = 3; break;
+            }
+            let pred = await this.tfModel.predict(villageNumber,+this.selectRoomsElement.value,+this.selectPriceElement.value)
+            this.outputWrong.innerText = "Schlecht: " + Math.round(pred[0][0]*100) + "%";
+            this.outputTrue.innerText = "Gut: " + Math.round(pred[0][1]*100) + "%";
+        }
     }
 
     changeVillage(event: Event) {
@@ -42,18 +80,21 @@ export class IOLables {
         if(this.inputVillageShower){
             this.inputVillageShower.innerText = "Ort: " + select.value;
         } 
+        this.newPredict();
     }
     changePrice(event: Event) {
         let input: HTMLInputElement = <HTMLInputElement>event.target
         if(this.inputPriceShower){
             this.inputPriceShower.innerText = "Price: " + input.value + "€";
         }
+        this.newPredict();
     }
     changeRooms(event: Event) {
         let input: HTMLInputElement = <HTMLInputElement>event.target
         if(this.inputRoomsShower){
             this.inputRoomsShower.innerText = "Rooms: " + input.value;
         }
+        this.newPredict();
     }
 
     inputLable(pos: number): HTMLDivElement {
@@ -78,7 +119,7 @@ export class IOLables {
         return html;
     }
 
-    outputLabel(pos: number) {
+    outputLabel(pos: number): HTMLElement {
         let html = document.createElement( 'div' );
         html.style.backgroundColor = 'white';
         html.style.color = "black";
@@ -95,5 +136,6 @@ export class IOLables {
         neuronLabel.layers.enable(1);
         neuronLabel.visible = true;
         this.scene.add(neuronLabel);
+        return html;
     }
 }

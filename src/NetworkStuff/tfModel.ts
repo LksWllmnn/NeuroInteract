@@ -1,8 +1,13 @@
 import * as tf from '@tensorflow/tfjs';
+import { IOLables } from './InputOutputLables';
 
 export class TFModel {
     model = tf.sequential();
     loader: HTMLDivElement|undefined;
+    epochLoader: HTMLDivElement|undefined;
+
+    // Define a custom event
+    private trainingDoneEvent: CustomEvent<void> = new CustomEvent<void>('trainingDone');
 
     async start(): Promise<void> {
         let predButton: HTMLButtonElement = <HTMLButtonElement>document.getElementById("PredictButton");
@@ -12,6 +17,7 @@ export class TFModel {
         }
 
         this.loader = <HTMLDivElement>document.getElementById("loaderScreen");
+        this.epochLoader = <HTMLDivElement>document.getElementById("epochLoader");
 
         // Read file content synchronously
         const response = await fetch('wohnungen.txt');
@@ -67,7 +73,7 @@ export class TFModel {
 
     async train(x_train: any,y_train: any, x_val: any, y_val: any):Promise<void> {
         console.log("train start");
-        let history = await this.model.fit(
+        await this.model.fit(
             x_train, y_train, 
             {
                 epochs: 200,
@@ -77,14 +83,18 @@ export class TFModel {
                     y_val
                 ],
                 callbacks: {
-                    onEpochEnd(epoch, logs) {
-                        console.log(log.)
+                    onEpochEnd: (epoch, logs) => {
+                        if(this.epochLoader)this.epochLoader.innerHTML= "training in Epoch: " + epoch + "/200";
                     },
-                    onTrainEnd: () => { if(this.loader)this.loader.style.display="none"}
+                    onTrainEnd: () => 
+                    { 
+                        if(this.loader)this.loader.style.display="none";
+                        window.dispatchEvent(this.trainingDoneEvent);
+                    }
                 }
             } )
 
-        console.log(await this.predict(1,1,50));
+        //console.log(await this.predict(1,1,50));
     }
 
     stylePredBut(button: HTMLButtonElement) {

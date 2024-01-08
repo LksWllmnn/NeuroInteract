@@ -1,4 +1,10 @@
 export class InteractionHandler {
+    constructor(_camera, _renderer, _lablerenderer) {
+        this._camera = _camera;
+        this._renderer = _renderer;
+        this._lablerenderer = _lablerenderer;
+        window.addEventListener('resize', this.onWindowResize.bind(this), false);
+    }
     get camera() {
         return this._camera;
     }
@@ -7,12 +13,6 @@ export class InteractionHandler {
     }
     get lablerenderer() {
         return this._lablerenderer;
-    }
-    constructor(_camera, _renderer, _lablerenderer) {
-        this._camera = _camera;
-        this._renderer = _renderer;
-        this._lablerenderer = _lablerenderer;
-        window.addEventListener('resize', this.onWindowResize.bind(this), false);
     }
     onWindowResize() {
         this.camera.aspect = window.innerWidth / window.innerHeight;

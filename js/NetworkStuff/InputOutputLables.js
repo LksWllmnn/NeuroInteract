@@ -15,29 +15,75 @@ export class IOLables {
         this.selectRoomsElement = document.getElementById("roomsInput");
         if (this.selectRoomsElement)
             this.selectRoomsElement.addEventListener("change", this.changeRooms.bind(this));
-        this.outputLabel(0);
-        this.outputLabel(1);
+        this.outputTrue = this.outputLabel(0);
+        this.outputWrong = this.outputLabel(1);
         this.inputVillageShower = this.inputLable(0);
         this.inputRoomsShower = this.inputLable(1);
         this.inputPriceShower = this.inputLable(2);
+        window.addEventListener('trainingDone', () => {
+            console.log('Training is done!');
+            this.firstPrediction();
+        });
+    }
+    async firstPrediction() {
+        console.log("starting First Prediction");
+        if (this.inputVillageShower) {
+            let villageNumber = 0;
+            switch (this.inputVillageShower.innerText) {
+                case "Furtwangen":
+                    villageNumber = 1;
+                    break;
+                case "Donaueschingen":
+                    villageNumber = 2;
+                    break;
+                case "Schwenningen":
+                    villageNumber = 3;
+                    break;
+            }
+            let pred = await this.tfModel.predict(villageNumber, +this.selectRoomsElement.placeholder, +this.selectPriceElement.placeholder);
+            this.outputWrong.innerText = "Schlecht: " + Math.round(pred[0][0] * 100) + "%";
+            this.outputTrue.innerText = "Gut: " + Math.round(pred[0][1] * 100) + "%";
+        }
+    }
+    async newPredict() {
+        if (this.inputVillageShower) {
+            let villageNumber = 0;
+            switch (this.inputVillageShower.innerText) {
+                case "Furtwangen":
+                    villageNumber = 1;
+                    break;
+                case "Donaueschingen":
+                    villageNumber = 2;
+                    break;
+                case "Schwenningen":
+                    villageNumber = 3;
+                    break;
+            }
+            let pred = await this.tfModel.predict(villageNumber, +this.selectRoomsElement.value, +this.selectPriceElement.value);
+            this.outputWrong.innerText = "Schlecht: " + Math.round(pred[0][0] * 100) + "%";
+            this.outputTrue.innerText = "Gut: " + Math.round(pred[0][1] * 100) + "%";
+        }
     }
     changeVillage(event) {
         let select = event.target;
         if (this.inputVillageShower) {
             this.inputVillageShower.innerText = "Ort: " + select.value;
         }
+        this.newPredict();
     }
     changePrice(event) {
         let input = event.target;
         if (this.inputPriceShower) {
             this.inputPriceShower.innerText = "Price: " + input.value + "€";
         }
+        this.newPredict();
     }
     changeRooms(event) {
         let input = event.target;
         if (this.inputRoomsShower) {
             this.inputRoomsShower.innerText = "Rooms: " + input.value;
         }
+        this.newPredict();
     }
     inputLable(pos) {
         let html = document.createElement("div");
@@ -83,6 +129,7 @@ export class IOLables {
         neuronLabel.layers.enable(1);
         neuronLabel.visible = true;
         this.scene.add(neuronLabel);
+        return html;
     }
 }
 //# sourceMappingURL=InputOutputLables.js.map

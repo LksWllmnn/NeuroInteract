@@ -20,6 +20,7 @@ export class NeuralNetwork {
 
     constructor(_scene: THREE.Scene, weight_1: number[][], weight_2: number[][]) {
         this.scene = _scene;
+
         this.inputLayer = [new THREE.Vector2(-4, -3), new THREE.Vector2(-4, 0), new THREE.Vector2(-4, 3)];
         this.hiddenLayer = [new THREE.Vector2(0, -3), new THREE.Vector2(0, 0), new THREE.Vector2(0, 3)];
         this.outputLayer = [new THREE.Vector2(4, -1), new THREE.Vector2(4, 1)];
