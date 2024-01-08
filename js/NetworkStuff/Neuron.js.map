@@ -1,0 +1,1 @@
+{"version":3,"file":"Neuron.js","sourceRoot":"","sources":["../../src/NetworkStuff/Neuron.ts"],"names":[],"mappings":"AAAA,MAAM,OAAO,MAAM;IAGf;QACI,IAAI,CAAC,OAAO,GAAG,EAAE,CAAC;IACtB,CAAC;IAED,UAAU,CAAC,QAAkB;QACzB,IAAI,CAAC,OAAO,GAAG,QAAQ,CAAC;QACxB,OAAO,CAAC,GAAG,CAAC,IAAI,CAAC,OAAO,CAAC,CAAC;IAC9B,CAAC;CACJ"}

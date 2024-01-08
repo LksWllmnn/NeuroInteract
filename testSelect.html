@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function createSelect() {
+            let select=  document.createElement("select");
+            select.appendChild(this.createOption("furtwangen"));
+            select.appendChild(this.createOption("donaueschingen"));
+            select.appendChild(this.createOption("schwenningen"));
+            console.log(select.childNodes);
+            return select;
+        }
+
+        function createOption(option) {
+            let optionElement = document.createElement("option");
+            optionElement.innerHTML = option;
+            return optionElement;
+        }
+
+        let select = createSelect();
+        select.appendChild(createOption("donau"));
+        select.appendChild(createOption("fuwa"));
+
+        document.body.appendChild(select);
+    </script>
+</body>
+</html>
